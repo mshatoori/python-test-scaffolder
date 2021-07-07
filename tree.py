@@ -1257,9 +1257,66 @@ Module(
         ),
     ],
     header=[],
-    footer=[],
+    footer=[
+        EmptyLine(
+            indent=True,
+            whitespace=SimpleWhitespace(
+                value='',
+            ),
+            comment=None,
+            newline=Newline(
+                value=None,
+            ),
+        ),
+        EmptyLine(
+            indent=True,
+            whitespace=SimpleWhitespace(
+                value='',
+            ),
+            comment=None,
+            newline=Newline(
+                value=None,
+            ),
+        ),
+        EmptyLine(
+            indent=True,
+            whitespace=SimpleWhitespace(
+                value='',
+            ),
+            comment=Comment(
+                value='# (root, [',
+            ),
+            newline=Newline(
+                value=None,
+            ),
+        ),
+        EmptyLine(
+            indent=True,
+            whitespace=SimpleWhitespace(
+                value='',
+            ),
+            comment=Comment(
+                value='# (EMPTY, [',
+            ),
+            newline=Newline(
+                value=None,
+            ),
+        ),
+        EmptyLine(
+            indent=True,
+            whitespace=SimpleWhitespace(
+                value='',
+            ),
+            comment=Comment(
+                value='# (If, []), (If, []), (Else, []), (If, [(If, []), (EMPTY, [(If, []), (EMPTY, []), (EMPTY, [])])])])])',
+            ),
+            newline=Newline(
+                value=None,
+            ),
+        ),
+    ],
     encoding='utf-8',
     default_indent='    ',
     default_newline='\n',
-    has_trailing_newline=True,
+    has_trailing_newline=False,
 )
