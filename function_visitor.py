@@ -7,11 +7,11 @@ from utils import code_gen
 
 
 class FunctionVisitor(cst.CSTVisitor):
-    def __init__(self):
+    def __init__(self, node: cst.FunctionDef):
         super().__init__()
-        self.foc = FlowOfControl()
+        self.func = node
+        self.foc = FlowOfControl(node.name.value)
         self.split_node_stack: List[FoCSplitNode] = []
-        self.chained_if_else_number = 0
 
     def top_split_node(self) -> Optional[FoCSplitNode]:
         if self.split_node_stack:
@@ -30,11 +30,11 @@ class FunctionVisitor(cst.CSTVisitor):
         top_split = self.top_split_node()
 
         if top_split is None or top_split.state == 'in_body':
-            if_split_node = FoCSplitNode()
+            if_split_node = FoCSplitNode(node)
             self.split_node_stack.append(if_split_node)
         else:
             assert top_split.state == 'or_else'
-            top_split.depth += 1
+            top_split.add_if(node)
 
         if top_split:
             print(f'depth={top_split.depth}')
@@ -48,7 +48,7 @@ class FunctionVisitor(cst.CSTVisitor):
         if top_split:
             print(f'depth={top_split.depth}')
 
-        top_split.add_child(FoCBranchNode(node.body))
+        top_split.add_child(FoCBranchNode(node.test))
         top_split.state = 'in_body'
 
     def leave_If_body(self, node: "If") -> None:
@@ -64,13 +64,42 @@ class FunctionVisitor(cst.CSTVisitor):
             print(f'depth={top_split.depth}')
 
         if node.orelse is None:
-            top_split.add_child(FoCBranchNode(None))
+            condition = cst.UnaryOperation(
+                operator=cst.Not(),
+                expression=top_split.ifs[0].test,
+            )
+
+            for _if in top_split.ifs[1:]:
+                condition = cst.BooleanOperation(
+                    left=condition,
+                    operator=cst.And(),
+                    right=cst.UnaryOperation(
+                        operator=cst.Not(),
+                        expression=_if.test,
+                    )
+                )
+
+            top_split.add_child(FoCBranchNode(condition))
 
     def visit_Else_body(self, node: "Else") -> None:
         print(f'Visiting Else body')
 
         top_split = self.top_split_node()
-        top_split.add_child(FoCBranchNode(node.body))
+        condition = cst.UnaryOperation(
+            operator=cst.Not(),
+            expression=top_split.ifs[0].test,
+        )
+
+        for _if in top_split.ifs[1:]:
+            condition = cst.BooleanOperation(
+                left=condition,
+                operator=cst.And(),
+                right=cst.UnaryOperation(
+                    operator=cst.Not(),
+                    expression=_if.test,
+                )
+            )
+        top_split.add_child(FoCBranchNode(condition))
 
     def leave_If_orelse(self, node: "If") -> None:
         print(f'Leaving if orelse {code_gen(node.orelse) if node.orelse else "EMPTY"}')

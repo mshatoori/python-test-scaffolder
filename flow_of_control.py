@@ -5,8 +5,9 @@ import libcst as cst
 
 
 class FlowOfControl:
-    def __init__(self):
+    def __init__(self, name):
         self.root = FoCRootNode()
+        self.name = name
 
     def __repr__(self):
         return f'FoC Tree:\n{repr(self.root)}'
@@ -39,16 +40,21 @@ class FoCRootNode(FoCNode):
 
 
 class FoCBranchNode(FoCNode):
-    def __init__(self, node: Optional[cst.CSTNode]):
+    def __init__(self, condition: Optional[cst.CSTNode]):
         super(FoCBranchNode, self).__init__()
-        self.node = node
+        self.condition = condition
 
 
 class FoCSplitNode(FoCNode):
-    def __init__(self):
+    def __init__(self, if_node: cst.If):
         super(FoCSplitNode, self).__init__()
         self.state = 'new'
+        self.ifs = [if_node]
         self.depth = 0
+
+    def add_if(self, if_node: cst.If):
+        self.ifs.append(if_node)
+        self.depth += 1
 
     def current_branch(self):
         return self.children[-1]

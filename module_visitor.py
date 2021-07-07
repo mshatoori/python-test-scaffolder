@@ -3,6 +3,7 @@ from typing import Optional
 import libcst as cst
 
 from function_visitor import FunctionVisitor
+from test_generator import TestGenerator
 
 
 class ModuleVisitor(cst.CSTVisitor):
@@ -20,9 +21,13 @@ class ModuleVisitor(cst.CSTVisitor):
 
     def visit_FunctionDef_body(self, node: "FunctionDef") -> None:
         print(f'Visiting function body {node.name.value}')
-        v = FunctionVisitor()
+        v = FunctionVisitor(node)
         node.body.visit(v)
-        v.log_foc_tree()
+
+        tg = TestGenerator(v.foc)
+        with open('gen_test.py', 'w') as test_file:
+            test_file.write(tg.generate())
+
 
     def leave_FunctionDef(self, original_node: "FunctionDef") -> None:
         print(f'Leaving function {original_node.name.value}')
