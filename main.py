@@ -90,6 +90,7 @@ class FunctionBodyVisitor(cst.CSTVisitor):
         self.foc = FlowOfControl()
         self.split_node_stack: List[FoCSplitNode] = []
         self.current_node = self.foc.root
+        self.chained_if_else_number = 0
 
     def top_split_node(self) -> Optional[FoCSplitNode]:
         if self.split_node_stack:
@@ -103,7 +104,8 @@ class FunctionBodyVisitor(cst.CSTVisitor):
         return False
 
     def visit_If(self, node: "If") -> Optional[bool]:
-        print(f'Visiting if {code_gen(node.test)}')
+        self.chained_if_else_number += 1
+        print(f'Visiting if {code_gen(node.test)}', " | ", self.chained_if_else_number)
 
         top_split = self.top_split_node()
 
@@ -129,25 +131,28 @@ class FunctionBodyVisitor(cst.CSTVisitor):
         print(f'Leaving if body {code_gen(node.test)}')
 
     def visit_If_orelse(self, node: "If") -> None:
-        print(f'Visiting if orelse {code_gen(node.orelse) if node.orelse else "EMPTY"}')
+        self.chained_if_else_number += 1
+        print(f'Visiting if orelse {code_gen(node.orelse) if node.orelse else "EMPTY"}', " | ", self.chained_if_else_number)
 
         top_split = self.top_split_node()
         top_split.state = 'or_else'
 
         if node.orelse is None:
             top_split.add_branch(node.orelse)
-        elif cst.ensure_type(node.orelse, cst.If):
+        elif isinstance(node.orelse, cst.If):
             pass
-        elif cst.ensure_type(node.orelse, cst.Else):
+        elif isinstance(node.orelse, cst.Else):
             branch = self.split_node_stack[-1].add_branch(node.orelse)
 
     def leave_If_orelse(self, node: "If") -> None:
-        print(f'Leaving if orelse {code_gen(node.orelse) if node.orelse else "EMPTY"}')
+        self.chained_if_else_number -= 1
+        print(f'Leaving if orelse {code_gen(node.orelse) if node.orelse else "EMPTY"}', " | ", self.chained_if_else_number)
         top_split = self.top_split_node()
         top_split.state = 'done'
 
     def leave_If(self, original_node: "If") -> None:
-        print(f'Leaving if {code_gen(original_node.test)}')
+        self.chained_if_else_number -= 1
+        print(f'Leaving if {code_gen(original_node.test)}', " | ", self.chained_if_else_number)
         top_split = self.top_split_node()
         assert top_split.state == 'done'
         split_node = self.split_node_stack.pop()
