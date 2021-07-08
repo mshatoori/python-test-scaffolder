@@ -4,13 +4,11 @@ from module_visitor import ModuleVisitor
 
 
 def main():
-    with open("guinea_pig.py", "r") as source:
+    module_name = 'guinea_pig'
+    with open(f"{module_name}.py", "r") as source:
         tree = cst.parse_module(source.read())
 
-        with open('tree.py', 'w') as f:
-            f.write(str(tree))
-
-        module_visitor = ModuleVisitor()
+        module_visitor = ModuleVisitor(module_name)
         tree.visit(module_visitor)
 
 

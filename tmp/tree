@@ -31,6 +31,62 @@ Module(
                 ),
             ),
         ),
+        SimpleStatementLine(
+            body=[
+                ImportFrom(
+                    module=Name(
+                        value='guinea_pig',
+                        lpar=[],
+                        rpar=[],
+                    ),
+                    names=[
+                        ImportAlias(
+                            name=Name(
+                                value='function_to_be_tested',
+                                lpar=[],
+                                rpar=[],
+                            ),
+                            asname=None,
+                            comma=MaybeSentinel.DEFAULT,
+                        ),
+                    ],
+                    relative=[],
+                    lpar=None,
+                    rpar=None,
+                    semicolon=MaybeSentinel.DEFAULT,
+                    whitespace_after_from=SimpleWhitespace(
+                        value=' ',
+                    ),
+                    whitespace_before_import=SimpleWhitespace(
+                        value=' ',
+                    ),
+                    whitespace_after_import=SimpleWhitespace(
+                        value=' ',
+                    ),
+                ),
+            ],
+            leading_lines=[
+                EmptyLine(
+                    indent=True,
+                    whitespace=SimpleWhitespace(
+                        value='',
+                    ),
+                    comment=None,
+                    newline=Newline(
+                        value=None,
+                    ),
+                ),
+            ],
+            trailing_whitespace=TrailingWhitespace(
+                whitespace=SimpleWhitespace(
+                    value='',
+                ),
+                comment=None,
+                newline=Newline(
+                    value=None,
+                ),
+            ),
+        ),
         ClassDef(
             name=Name(
                 value='MyTestCase',
@@ -74,6 +130,28 @@ Module(
                         ),
                         body=IndentedBlock(
                             body=[
+                                SimpleStatementLine(
+                                    body=[
+                                        Expr(
+                                            value=SimpleString(
+                                                value='"""This test function tests something when these conditions are met:\n        - CONDITION1\n        - CONDITION2\n        """',
+                                                lpar=[],
+                                                rpar=[],
+                                            ),
+                                            semicolon=MaybeSentinel.DEFAULT,
+                                        ),
+                                    ],
+                                    leading_lines=[],
+                                    trailing_whitespace=TrailingWhitespace(
+                                        whitespace=SimpleWhitespace(
+                                            value='',
+                                        ),
+                                        comment=None,
+                                        newline=Newline(
+                                            value=None,
+                                        ),
+                                    ),
+                                ),
                                 SimpleStatementLine(
                                     body=[
                                         Assign(
@@ -148,7 +226,18 @@ Module(
                                             semicolon=MaybeSentinel.DEFAULT,
                                         ),
                                     ],
-                                    leading_lines=[],
+                                    leading_lines=[
+                                        EmptyLine(
+                                            indent=False,
+                                            whitespace=SimpleWhitespace(
+                                                value='',
+                                            ),
+                                            comment=None,
+                                            newline=Newline(
+                                                value=None,
+                                            ),
+                                        ),
+                                    ],
                                     trailing_whitespace=TrailingWhitespace(
                                         whitespace=SimpleWhitespace(
                                             value='',
@@ -252,7 +341,7 @@ Module(
                                                         ],
                                                         value=Call(
                                                             func=Name(
-                                                                value='something',
+                                                                value='function_to_be_tested',
                                                                 lpar=[],
                                                                 rpar=[],
                                                             ),
@@ -673,6 +762,16 @@ Module(
             ),
             orelse=None,
             leading_lines=[
+                EmptyLine(
+                    indent=False,
+                    whitespace=SimpleWhitespace(
+                        value='',
+                    ),
+                    comment=None,
+                    newline=Newline(
+                        value=None,
+                    ),
+                ),
                 EmptyLine(
                     indent=False,
                     whitespace=SimpleWhitespace(

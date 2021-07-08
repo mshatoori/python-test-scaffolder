@@ -7,9 +7,10 @@ from test_generator import TestGenerator
 
 
 class ModuleVisitor(cst.CSTVisitor):
-    def __init__(self):
+    def __init__(self, module_name):
         super(ModuleVisitor, self).__init__()
         self.current_function = None
+        self.module_name = module_name
 
     def visit_ClassDef(self, node: cst.ClassDef) -> Optional[bool]:
         return False  # Don't look for class methods
@@ -21,11 +22,11 @@ class ModuleVisitor(cst.CSTVisitor):
 
     def visit_FunctionDef_body(self, node: "FunctionDef") -> None:
         print(f'Visiting function body {node.name.value}')
-        v = FunctionVisitor(node)
+        v = FunctionVisitor(node, self.module_name)
         node.body.visit(v)
 
         tg = TestGenerator(v.foc)
-        with open('gen_test.py', 'w') as test_file:
+        with open(f'gen_test_{v.foc.name}.py', 'w') as test_file:
             test_file.write(tg.generate())
 
 
